@@ -230,6 +230,89 @@ h1, h2, h3 {
   font-family: 'Outfit';
 }
 
+button.primary-btn {
+  background: linear-gradient(135deg, var(--accent-color), #00b368);
+  color: #050505;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  box-shadow: 0 4px 15px var(--accent-glow);
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  font-size: 0.85rem;
+}
+
+button.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--accent-glow);
+  filter: brightness(1.1);
+}
+
+button.primary-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+button.secondary-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+}
+
+button.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--text-secondary);
+}
+
+/* Stilizzazione azioni nella Library */
+.strat-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.strat-actions button {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.strat-actions button:hover {
+  background: var(--accent-glow);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.strat-actions button.delete {
+  color: #ff6b6b;
+}
+
+.strat-actions button.delete:hover {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
 .chart-container {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
