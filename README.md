@@ -2,7 +2,9 @@
 
 GoFin is a professional-grade Desktop GUI for the **Quantara** algorithmic trading engine. Built with **Go** and **React**, it provides a stunning, high-performance interface to design, backtest, and analyze financial investment strategies.
 
-![GoFin Dashboard](https://raw.githubusercontent.com/MichelBernasconi/GoFin/main/preview.png) *(Note: Placeholder link, replace with actual screenshot after push)*
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/michelbernasconi)
+
+![GoFin Dashboard](https://raw.githubusercontent.com/MichelBernasconi/GoFin/main/preview.png)
 
 ## 🚀 Key Features
 
