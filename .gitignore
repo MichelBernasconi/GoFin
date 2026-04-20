@@ -1,0 +1,26 @@
+# Go
+bin/
+build/bin/
+backend.exe
+
+# Node / Frontend
+node_modules/
+dist/
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Rust / Engine
+quantara-engine/target/
+quantara-engine/Cargo.lock
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
