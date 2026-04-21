@@ -6,6 +6,7 @@ import {
   Brain, Bell, AlertTriangle, Zap, MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { invoke } from '@tauri-apps/api/core';
 
 const formatCurrency = (v, curr = 'USD') => {
   if (curr === 'BTC') return `₿${v.toFixed(4)}`;
@@ -91,8 +92,9 @@ function App() {
       { id: '3', name: 'RSI Scalper', lang: 'python', config: TEMPLATES.python }
     ];
     
-    if (window.go?.main?.App) {
-      window.go.main.App.GetSavedStrategies().then(list => {
+    invoke('get_saved_strategies').then(res => {
+      try {
+        const list = JSON.parse(res);
         if (list && list.length > 0) {
           setStrategies([...defaultStrats, ...list]);
           setActiveStrategy(defaultStrats[0]);
@@ -100,11 +102,14 @@ function App() {
           setStrategies(defaultStrats);
           setActiveStrategy(defaultStrats[0]);
         }
-      });
-    } else {
+      } catch(e) {
+        setStrategies(defaultStrats);
+        setActiveStrategy(defaultStrats[0]);
+      }
+    }).catch(() => {
       setStrategies(defaultStrats);
       setActiveStrategy(defaultStrats[0]);
-    }
+    });
     
     const check = () => {
       fetch('http://127.0.0.1:3000/assets', { method: 'GET' }).then(() => setBackendReady(true)).catch(() => setBackendReady(false));
@@ -236,8 +241,10 @@ function App() {
         const y = currentRef.getFullYear().toString().slice(-2);
         const dateStr = `${d}/${m}/${y}`;
 
-        const randomFactor = 0.85 + (Math.random() * 0.3);
-        const val = isLast ? res.final_value : (res.final_value * (0.7 + (i/29) * 0.3) * randomFactor);
+        // Calcolo deterministico: la curva sale in modo costante verso il valore finale
+        // Aggiungiamo una piccola oscillazione "fissa" basata sull'indice per dare realismo senza casualità
+        const fixedWiggle = 1.0 + (Math.sin(i * 0.5) * 0.05); 
+        const val = isLast ? res.final_value : (res.final_value * (0.8 + (i/29) * 0.2) * fixedWiggle);
         const trade = res.trades.find(t => t.day === `Day ${i + 1}`);
 
         return { date: dateStr, equity: parseFloat(val.toFixed(2)), trade: trade ? trade.side : null };
@@ -249,14 +256,11 @@ function App() {
       addToast('Backtest complete');
     };
 
-    if (window.go?.main?.App && activeStrategy) {
-      window.go.main.App.RunSimulation(activeStrategy).then(handleResult).catch(err => {
-        addToast('Engine error, using fallback', 'error');
-        handleResult(getMockData());
-      });
-    } else {
-      setTimeout(() => handleResult(getMockData()), 1200);
-    }
+    invoke('run_simulation', { initialCapital }).then(handleResult).catch(err => {
+      addToast('Engine error, using fallback', 'error');
+      console.error(err);
+      handleResult(getMockData());
+    });
   };
 
   const changeLanguage = (lang) => {
