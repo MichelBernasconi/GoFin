@@ -14,6 +14,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2.5.6", features = [] }
+prost-build = "0.13"
 
 [dependencies]
 serde_json = "1.0"
@@ -23,6 +24,7 @@ tauri = { version = "2.10.3", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-shell = "2"
 tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json"] }
 quantara = { path = "../quantara-engine" }
 rust_decimal = { version = "1.35", features = ["serde-float"] }
 chrono = { version = "0.4", features = ["serde"] }

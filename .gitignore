@@ -14,6 +14,9 @@ yarn-error.log*
 # Rust / Engine
 quantara-engine/target/
 quantara-engine/Cargo.lock
+.data/
+strategy_temp.bin
+strategies_out.bin
 
 # IDEs
 .vscode/
