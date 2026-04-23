@@ -238,6 +238,12 @@ body {
 
 .icon-btn:hover { background: rgba(255,255,255,0.1); color: var(--accent-color); }
 
+.active-toggle {
+  background: var(--accent-glow) !important;
+  color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
 .sub-header-selectors button {
   background: transparent;
   border: none;

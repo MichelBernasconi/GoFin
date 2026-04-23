@@ -29,3 +29,4 @@ quantara = { path = "../quantara-engine" }
 rust_decimal = { version = "1.35", features = ["serde-float"] }
 rust_decimal_macros = "1.35"
 chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"

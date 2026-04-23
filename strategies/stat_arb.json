@@ -1,0 +1,16 @@
+{
+  "strategy_name": "Statistical Arbitrage",
+  "version": "1.0.0",
+  "engine_compatibility": "Quantara v2.5",
+  "parameters": {
+    "pair_a": "AAPL",
+    "pair_b": "MSFT",
+    "entry_zscore": 2.0,
+    "exit_zscore": 0.5,
+    "lookback_window": 60
+  },
+  "risk_management": {
+    "max_drawdown": 10.0,
+    "stop_loss_pct": 2.0
+  }
+}
