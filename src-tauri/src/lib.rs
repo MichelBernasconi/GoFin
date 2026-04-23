@@ -112,7 +112,7 @@ async fn run_simulation(
     startDate: String,
     endDate: String,
     symbol: String,
-    strategyId: String,
+    _strategyId: String,
     timeframe: String
 ) -> Result<UiResult, String> {
     let supabase_url = "https://wvoqjzpapebtlczxiztp.supabase.co";
@@ -189,8 +189,8 @@ async fn run_simulation(
         });
     }
 
-    let last_price = close_prices.last().cloned().unwrap_or(dec!(0));
-    let final_equity = if position_qty > dec!(0) { position_qty * last_price } else { current_capital };
+    let final_price = raw_prices.last().map(|p| p.close).unwrap_or(dec!(1));
+    let final_equity = if position_qty > dec!(0) { position_qty * final_price } else { current_capital };
     let initial_cap_dec = Decimal::from_f64(initial_capital).unwrap_or(dec!(1));
     let total_return = if initial_cap_dec != dec!(0) { 
         ((final_equity - initial_cap_dec) / initial_cap_dec * dec!(100)).round_dp(2) 
@@ -199,8 +199,7 @@ async fn run_simulation(
     };
 
     let first_price = raw_prices.first().map(|p| p.close).unwrap_or(dec!(1));
-    let last_price = raw_prices.last().map(|p| p.close).unwrap_or(dec!(1));
-    let benchmark_return = ((last_price - first_price) / first_price * dec!(100)).round_dp(2);
+    let benchmark_return = ((final_price - first_price) / first_price * dec!(100)).round_dp(2);
 
     Ok(UiResult {
         final_value: final_equity.to_f64().unwrap_or(0.0),
