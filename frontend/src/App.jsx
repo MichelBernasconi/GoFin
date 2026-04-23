@@ -121,10 +121,17 @@ function App() {
 
   useEffect(() => {
     const fetchMarket = async () => {
+      // Puliamo i risultati precedenti per evitare disallineamenti visivi
+      setResults(null);
+      setMonteCarloResults(null);
+      
       try {
         const data = await invoke('get_market_data', { symbol: selectedAsset, start, end, timeframe });
         setMarketData(data);
-      } catch(e) { console.error(e); }
+      } catch(e) { 
+        console.error(e); 
+        addToast('Errore nel caricamento dati di mercato: ' + e, 'error');
+      }
     };
     fetchMarket();
   }, [selectedAsset, start, end, timeframe]);
@@ -145,7 +152,13 @@ function App() {
   const runMonteCarlo = async () => {
     setLoading(true);
     try {
-      const res = await invoke('run_monte_carlo', { initialCapital: capital, symbol: selectedAsset, timeframe });
+      const res = await invoke('run_monte_carlo', { 
+        initialCapital: capital, 
+        symbol: selectedAsset, 
+        startDate: start, 
+        endDate: end, 
+        timeframe 
+      });
       setMonteCarloResults(res);
       addToast(`Simulazione Monte Carlo completata.`);
     } catch (err) { addToast('Errore: ' + err, 'error'); }

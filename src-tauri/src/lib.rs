@@ -2,6 +2,10 @@ use serde::{Deserialize, Serialize};
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 use chrono::{Datelike, NaiveDate};
+use rand::seq::SliceRandom;
+
+const SUPABASE_URL: &str = "https://wvoqjzpapebtlczxiztp.supabase.co";
+const SUPABASE_KEY: &str = "sb_publishable_BAkgODZJrFKsXgjEM90f7w_N8_jZxLx";
 
 #[derive(Serialize, Deserialize)]
 pub struct UiResult {
@@ -115,14 +119,11 @@ async fn run_simulation(
     _strategyId: String,
     timeframe: String
 ) -> Result<UiResult, String> {
-    let supabase_url = "https://wvoqjzpapebtlczxiztp.supabase.co";
-    let supabase_key = "sb_publishable_BAkgODZJrFKsXgjEM90f7w_N8_jZxLx";
-
     let url = format!("{}/rest/v1/historical_prices?symbol=eq.{}&date=gte.{}&date=lte.{}&select=date,open,high,low,close&order=date.asc", 
-        supabase_url, symbol, startDate, endDate);
+        SUPABASE_URL, symbol, startDate, endDate);
 
     let client = reqwest::Client::new();
-    let response = client.get(&url).header("apikey", supabase_key).header("Authorization", format!("Bearer {}", supabase_key)).send().await.map_err(|e| e.to_string())?;
+    let response = client.get(&url).header("apikey", SUPABASE_KEY).header("Authorization", format!("Bearer {}", SUPABASE_KEY)).send().await.map_err(|e| e.to_string())?;
     let daily_prices: Vec<SupabasePrice> = response.json().await.map_err(|e| e.to_string())?;
 
     if daily_prices.is_empty() { return Err("No data".to_string()); }
@@ -146,7 +147,7 @@ async fn run_simulation(
         let p = &raw_prices[i];
         let mut executed_side = None;
         
-        if i > 50 {
+        if i >= 49 { // Supporta SMA 50 dal primo giorno utile
             let buy_signal = sma_fast[i-1] <= sma_slow[i-1] && sma_fast[i] > sma_slow[i];
             let sell_signal = sma_fast[i-1] >= sma_slow[i-1] && sma_fast[i] < sma_slow[i];
 
@@ -212,12 +213,12 @@ async fn run_simulation(
 }
 
 #[tauri::command]
-async fn run_monte_carlo(initial_capital: f64, symbol: String, timeframe: String) -> Result<Vec<f64>, String> {
-    // 1. Recuperiamo i dati storici reali per il bootstrap
-    let market_data = get_market_data(symbol, "2023-01-01".to_string(), "2024-01-01".to_string(), timeframe).await?;
+async fn run_monte_carlo(initial_capital: f64, symbol: String, startDate: String, endDate: String, timeframe: String) -> Result<Vec<f64>, String> {
+    // 1. Recuperiamo i dati storici reali per il bootstrap basandoci sulle date scelte
+    let market_data = get_market_data(symbol, startDate, endDate, timeframe).await?;
     
     if market_data.len() < 2 {
-        return Err("Dati insufficienti per Monte Carlo".to_string());
+        return Err("Dati insufficienti per Monte Carlo nel periodo selezionato".to_string());
     }
 
     // 2. Calcoliamo i rendimenti storici logaritmici/percentuali
@@ -252,11 +253,9 @@ async fn run_monte_carlo(initial_capital: f64, symbol: String, timeframe: String
 
 #[tauri::command]
 async fn get_market_data(symbol: String, start: String, end: String, timeframe: String) -> Result<Vec<UiPricePoint>, String> {
-    let supabase_url = "https://wvoqjzpapebtlczxiztp.supabase.co";
-    let supabase_key = "sb_publishable_BAkgODZJrFKsXgjEM90f7w_N8_jZxLx";
-    let url = format!("{}/rest/v1/historical_prices?symbol=eq.{}&date=gte.{}&date=lte.{}&select=date,open,high,low,close&order=date.asc", supabase_url, symbol, start, end);
+    let url = format!("{}/rest/v1/historical_prices?symbol=eq.{}&date=gte.{}&date=lte.{}&select=date,open,high,low,close&order=date.asc", SUPABASE_URL, symbol, start, end);
     let client = reqwest::Client::new();
-    let response = client.get(&url).header("apikey", supabase_key).header("Authorization", format!("Bearer {}", supabase_key)).send().await.map_err(|e| e.to_string())?;
+    let response = client.get(&url).header("apikey", SUPABASE_KEY).header("Authorization", format!("Bearer {}", SUPABASE_KEY)).send().await.map_err(|e| e.to_string())?;
     let daily_prices: Vec<SupabasePrice> = response.json().await.map_err(|e| e.to_string())?;
     
     let raw_prices = aggregate_data(daily_prices, &timeframe);
